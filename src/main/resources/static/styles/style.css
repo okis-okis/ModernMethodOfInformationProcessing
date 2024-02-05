@@ -27,3 +27,64 @@ h1 {
 .result h3 {
   text-align: center;
 }
+
+.tableData{
+  margin: 10px 0px;
+  height: 400px;
+  overflow-y: scroll;
+  margin-left: auto;
+  margin-right: auto;
+  width: 40%;
+  padding: 0px 10px;
+}
+
+.generatedData{
+	border-collapse: collapse;
+	border: 1px solid black;
+	text-align: center;
+	vertical-align: middle;
+  width: 100%;
+}
+
+.generatedData thead tr {
+  background-color: #000398;
+  color: #ffffff;
+  text-align: left;
+}
+
+.generatedData th,
+.generatedData td {
+    padding: 12px 15px;
+    text-align: center;
+}
+
+.generatedData tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.generatedData tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.generatedData tbody tr:last-of-type {
+  border-bottom: 2px solid #000398;
+}
+
+.generatedData tbody tr.active-row {
+  font-weight: bold;
+  color: #000398;
+}
+
+.btn {
+  background-color: DodgerBlue;
+  border: none;
+  color: white;
+  padding: 12px 30px;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/* Darker background on mouse-over */
+.btn:hover {
+  background-color: RoyalBlue;
+}

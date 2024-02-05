@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link th:href="@{/styles/style.css}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   </head>
   <body>
     <div class="wrapper">
@@ -61,19 +62,101 @@
         <p>Значение N: <span th:text="${n}"></span></p>
 
         <h3>Параметры статистического анализа</h3>
+        <p>Среднее значение: <span th:text="${averageValue}"></span></p>
+        <p>Стандартная ошибка: <span th:text="${standardError}"></span></p>
+        <p>Дисперсия: <span th:text="${variance}"></span></p>
+        <p>Медиана: <span th:text="${median}"></span></p>
+        <p>Минимальное значение: <span th:text="${minValue}"></span></p>
+        <p>Максимальное значение: <span th:text="${maxValue}"></span></p>
+        <p>Сумма: <span th:text="${amount}"></span></p>
+        <p>Тренд: <span th:text="${trend}"></span></p>
 
-        <table>
-          <tr>
-            <th>x<sub>i</sub></th>
-            <th>f(x<sub>i</sub>)</th>
-          </tr>
-          <tr th:each="node: ${nodes}">
-            <td th:text="${node.x}"></td>
-            <td th:text="${node.functionValue}"></td>
-          </tr>
-        </table>
+        <div class="tableData">
+          <table class="generatedData">
+            <caption>Сгенерированные данные</caption>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>x<sub>i</sub></th>
+                <th>f(x<sub>i</sub>)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="node: ${nodes}">
+                <td th:text="${node.id}"></td>
+                <td th:text="${node.x}"></td>
+                <td th:text="${node.functionValue}"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>        
 
-        <a th:href="${excelFilePath}" target="_blank">Download Excel link</a>
+        <script th:src="@{/js/Chart.js}"></script>
+
+        <canvas id="lineChart" style="width:90%;"></canvas>
+
+        <canvas id="pointChart" style="width:90%;"></canvas>
+
+        <script th:inline="javascript">
+          const xValues = /*[[${xArr}]]*/;
+          const yValues = /*[[${yArr}]]*/;
+          const trendValues = /*[[${trendArr}]]*/;
+          
+          new Chart("lineChart", {
+            type: "line",
+            data: {
+              labels: xValues,
+              datasets: [{
+                fill: false,
+                lineTension: 0,
+                backgroundColor: "rgba(0,0,255,1.0)",
+                borderColor: "rgba(0,0,255,0.1)",
+                data: yValues
+              },
+              {
+                fill: false,
+                lineTension: 0,
+                backgroundColor: "rgba(255,0,0,1.0)",
+                borderColor: "rgba(255,0,0,0.1)",
+                data: trendValues
+              }]
+            },
+            options: {
+              legend: {display: false},
+              scales: {
+                yAxes: [{ticks: {min: /*[[${minValue}]]*/, max:/*[[${maxValue}]]*/}}],
+              }
+            }
+          });
+
+          let xyValues = [];
+
+          for(let i=0;i<xValues.length;i++){
+            xyValues.push({x: xValues[i], y: yValues[i]});
+          }
+
+          console.log(xyValues);
+
+          new Chart("pointChart", {
+            type: "scatter",
+            data: {
+              datasets: [{
+                pointRadius: 4,
+                pointBackgroundColor: "rgb(0,0,255)",
+                data: xyValues
+              }]
+            },
+            options: {
+              legend: {display: false},
+              scales: {
+                xAxes: [{ticks: {min: /*[[${min}]]*/, max:/*[[${max}]]*/}}],
+                yAxes: [{ticks: {min: /*[[${minValue}]]*/, max:/*[[${maxValue}]]*/}}],
+              }
+            }
+          });
+        </script>
+                
+        <a th:href="${excelFilePath}" class="btn" target="_blank"><i class="fa fa-download"></i> Download Excel link</a>
       </div>
     </div>
   </body>

@@ -3,6 +3,7 @@ package okis.mmpi.lb1;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,72 @@ public class Statistic {
 	int N;
 	List<Node> functionValue;
 	
+	double averageValue, standardError, variance, median, minimumValue, maximumValue, amount, trend;
+	
+	public double getTrend() {
+		return trend;
+	}
+
+	public void setTrend(double trend) {
+		this.trend = trend;
+	}
+
+	public double getAverageValue() {
+		return averageValue;
+	}
+
+	public void setAverageValue(double averageValue) {
+		this.averageValue = averageValue;
+	}
+
+	public double getStandardError() {
+		return standardError;
+	}
+
+	public void setStandardError(double standardError) {
+		this.standardError = standardError;
+	}
+
+	public double getVariance() {
+		return variance;
+	}
+
+	public void setVariance(double variance) {
+		this.variance = variance;
+	}
+
+	public double getMedian() {
+		return median;
+	}
+
+	public void setMedian(double median) {
+		this.median = median;
+	}
+
+	public double getMinimumValue() {
+		return minimumValue;
+	}
+
+	public void setMinimumValue(double minimumValue) {
+		this.minimumValue = minimumValue;
+	}
+
+	public double getMaximumValue() {
+		return maximumValue;
+	}
+
+	public void setMaximumValue(double maximumValue) {
+		this.maximumValue = maximumValue;
+	}
+
+	public double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(double amount) {
+		this.amount = amount;
+	}
+
 	public Statistic(double min, double max, double delta, int N) {
 		this.min = min;	
 		this.max = max;
@@ -28,7 +95,7 @@ public class Statistic {
 		functionValue = new ArrayList();
 		
 		for(double d=min;d<=max+delta;d+=delta)
-			functionValue.add(new Node(d, func(d)));
+			functionValue.add(new Node((int)(d/delta), d, func(d)));
 	}
 	
 	public List<Node> getNodes() {
@@ -66,7 +133,8 @@ public class Statistic {
 									"MEDIAN(D1:D257)", 
 									"MIN(D1:D257)", 
 									"MAX(D1:D257)", 
-									"SUM(D1:D257)"
+									"SUM(D1:D257)",
+									"TREND(D1:D257, C1:C257, "+(this.max+this.delta)+", TRUE)"
 									};
 			
 			for(int i=0;i<functionExcel.length;i++) {
@@ -76,6 +144,15 @@ public class Statistic {
 				formulaCell.setCellFormula(functionExcel[i]);
 				formulaEvaluator.evaluateFormulaCell(formulaCell);
 			}
+			
+			averageValue 	= getThreeDecimal(sheet.getRow(0).getCell(5).getNumericCellValue());
+			standardError 	= getThreeDecimal(sheet.getRow(1).getCell(5).getNumericCellValue());
+			variance 		= getThreeDecimal(sheet.getRow(2).getCell(5).getNumericCellValue());
+			median 			= getThreeDecimal(sheet.getRow(3).getCell(5).getNumericCellValue());
+			minimumValue 	= getThreeDecimal(sheet.getRow(4).getCell(5).getNumericCellValue());
+			maximumValue 	= getThreeDecimal(sheet.getRow(5).getCell(5).getNumericCellValue());
+			amount 			= getThreeDecimal(sheet.getRow(6).getCell(5).getNumericCellValue());
+			trend 			= getThreeDecimal(sheet.getRow(7).getCell(5).getNumericCellValue());
 			
 			File resultFile = new File("result.xlsx");
 			String saveFileLocation = resultFile.getPath();
@@ -92,5 +169,10 @@ public class Statistic {
 		}
 		
 		return null;
+	}
+	
+	public Double getThreeDecimal(Double d) {
+		DecimalFormat df = new DecimalFormat("##.###");
+		return Double.valueOf(df.format(d).replace(',', '.'));
 	}
 }
