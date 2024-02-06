@@ -1,5 +1,16 @@
 package okis.mmpi.lb1;
 
+/**
+* Author: OKis
+* Group:  SCS-23m
+* Organization: DSTU
+* Language: Java
+* Language version: 17 (maven project)
+* Frameworks: Spring
+* Date: 05.01.2024
+* Revision:  
+*/
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -85,6 +96,13 @@ public class Statistic {
 		this.amount = amount;
 	}
 
+	/**
+	 * Calculate statstical date
+	 * @param min - Double value - The lower value of Xi
+	 * @param max - Double value - The upper value of Xi
+	 * @param delta - Double value - Step value for Xi
+	 * @param N - Integer value - Student's number on the list
+	 */
 	public Statistic(double min, double max, double delta, int N) {
 		this.min = min;	
 		this.max = max;

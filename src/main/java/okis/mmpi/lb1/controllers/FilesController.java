@@ -1,5 +1,16 @@
 package okis.mmpi.lb1.controllers;
 
+/**
+* Author: OKis
+* Group:  SCS-23m
+* Organization: DSTU
+* Language: Java
+* Language version: 17 (maven project)
+* Frameworks: Spring
+* Date: 05.01.2024
+* Revision:  
+*/
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

@@ -1,5 +1,18 @@
 package okis.mmpi.lb1.controllers;
 
+/**
+ * Author: OKis
+ * Group:  SCS-23m
+ * Organization: DSTU
+ * Language: Java
+ * Language version: 17 (maven project)
+ * Frameworks: Spring
+ * Date: 30.01.2024
+ * Revision: (1) - 04.01.2024
+ * 			 (2) - 05.01.2024
+ * 			 (3) - 06.01.2024
+ */
+
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
