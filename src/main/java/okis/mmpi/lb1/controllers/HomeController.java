@@ -25,6 +25,8 @@ public class HomeController {
 		mv.addObject("delta", 0.2); 
 		mv.addObject("n", 2); 
 		
+		mv.addObject("averageValue", 0);
+		
 		return mv;
 	}
 	

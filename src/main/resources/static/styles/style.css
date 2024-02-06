@@ -88,3 +88,13 @@ h1 {
 .btn:hover {
   background-color: RoyalBlue;
 }
+
+.footerDownloadLink{
+  margin: 20px;
+  text-align: center;
+}
+
+.canvasTitle{
+  text-align: center;
+  margin: 20px 0px 10px 0px;
+}

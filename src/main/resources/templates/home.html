@@ -48,13 +48,13 @@
             th:value="${n}"
           />
 
-          <input type="submit" value="Обработать" />
+          <input type="submit" value="Обработать"/>
         </form>
       </div>
 
       <hr />
 
-      <div class="result">
+      <div class="result" th:if="${averageValue != 0}">
         <h3>Ведённые параметры</h3>
         <p>Минимальное значение: <span th:text="${min}"></span></p>
         <p>Максимальное значение: <span th:text="${max}"></span></p>
@@ -93,8 +93,10 @@
 
         <script th:src="@{/js/Chart.js}"></script>
 
+        <h3 class="canvasTitle">График функции f(x) и тренда</h3>
         <canvas id="lineChart" style="width:90%;"></canvas>
 
+        <h3 class="canvasTitle">Точечное представление графика</h3>
         <canvas id="pointChart" style="width:90%;"></canvas>
 
         <script th:inline="javascript">
@@ -156,7 +158,10 @@
           });
         </script>
                 
-        <a th:href="${excelFilePath}" class="btn" target="_blank"><i class="fa fa-download"></i> Download Excel link</a>
+        <div class="footerDownloadLink">
+          <a th:href="${excelFilePath}" class="btn" target="_blank"><i class="fa fa-download"></i>Скачать Excel file</a>
+        </div>
+        
       </div>
     </div>
   </body>
