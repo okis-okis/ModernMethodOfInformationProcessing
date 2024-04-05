@@ -8,7 +8,7 @@ package okis.mmpi.lb1;
 * Language version: 17 (maven project)
 * Frameworks: Spring
 * Date: 05.01.2024
-* Revision:  
+* Revision:  04.04.2024 - добавление комментариев
 */
 
 import java.io.File;
@@ -25,12 +25,74 @@ import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.util.ResourceUtils;
 
+/**
+ * Класс для обработки стастических данных
+ */
 public class Statistic {
-	double min, max, delta;
+	/**
+	 * Минимальное значение в массиве данных X
+	 */
+	private double min; 
+	
+	/**
+	 * Максимальное значение в массиве данных X
+	 */
+	private double max;
+	
+	/**
+	 * Значение шага для массива X
+	 */
+	private double delta;
+	
+	/**
+	 * Номер студента по списку (коэффициент для f(x))
+	 */
 	int N;
+	
+	/**
+	 * Массив результатов выполнения функции f(x)
+	 */
 	List<Node> functionValue;
 	
-	double averageValue, standardError, variance, median, minimumValue, maximumValue, amount, trend;
+	/**
+	 * Среднее значение результата выполнения функции f(x)
+	 */
+	double averageValue;
+	
+	/**
+	 * Значение ошибки
+	 */
+	double standardError; 
+	
+	/**
+	 * Значение дисперсии
+	 */
+	double variance;
+	
+	/**
+	 * Значение медианы
+	 */
+	double median; 
+	
+	/**
+	 * Минимальное значение результата выполнения функции f(x)
+	 */
+	double minimumValue; 
+	
+	/**
+	 * Максимальное значение результата выполнения функции f(x)
+	 */
+	double maximumValue; 
+	
+	/**
+	 * Сумма всех значений результата выполнения функции f(x)
+	 */
+	double amount; 
+	
+	/**
+	 * Линия тренда (конечная точка)
+	 */
+	double trend;
 	
 	public double getTrend() {
 		return trend;
@@ -97,11 +159,11 @@ public class Statistic {
 	}
 
 	/**
-	 * Calculate statstical date
-	 * @param min - Double value - The lower value of Xi
-	 * @param max - Double value - The upper value of Xi
-	 * @param delta - Double value - Step value for Xi
-	 * @param N - Integer value - Student's number on the list
+	 * Функция вычисления статистических данных
+	 * @param min - Нижняя граница (минимальное значение) X<sup>i</sup>
+	 * @param max - Верхняя граница (максимальное значение) X<sup>i</sup>
+	 * @param delta - Значение шага X<sup>i</sup>
+	 * @param N - Номер студента по списку (коэффициент)
 	 */
 	public Statistic(double min, double max, double delta, int N) {
 		this.min = min;	
@@ -120,10 +182,78 @@ public class Statistic {
 		return functionValue;
 	}
 	
+	/**
+	 * Вычислить значение функции f(x)
+	 * @param x Параметр X
+	 * @return Результат выполнения функции f(x)
+	 */
 	private double func(double x) {
-		return (N+4)*Math.sin(x/N)*(Math.random()%(N+4))+((N+2)/2)*Math.cos(x)*(Math.random()%(N+3))-(Math.random()%(N/2))+(N*x)/(N+2);
+		//return (N+4)*Math.sin(x/N)*(Math.random()%(N+4))+((N+2)/2)*Math.cos(x)*(Math.random()%(N+3))-(Math.random()%(N/2))+(N*x)/(N+2);
+		return (N+4)*Math.sin(x/N) + (N+2)/2*Math.cos(N*x);
 	}
 	
+	/**
+	 * Получить гармоники для массива X
+	 * @return массив комплексных чисел, являющихся гармониками массива X
+	 */
+	public Complex[] getHarmonicsComplex() {
+		Complex[] x = new Complex[functionValue.size()-1];
+
+        for (int i = 0; i < x.length; i++) {
+            x[i] = new Complex(functionValue.get(i+1).getFunctionValue(), 0);
+        }
+        return FFT.dft(x);
+	}
+	
+	/**
+	 * Получить гармоники с фитром по нижней границе
+	 * @param harmonicsArray Массив комплексных чисел гармоник
+	 * @param filterValue Пароговое значение фильтра
+	 * @return новый отфильтрованный массив комплексных чисел 
+	 */
+	public Complex[] getHarmonicsArrayFilter(Complex[] harmonicsArray, int filterValue) {		      
+		Complex[] filter = new Complex[harmonicsArray.length];
+        
+		for(int i=0;i<harmonicsArray.length;i++)
+        	filter[i] = harmonicsArray[i].abs()>filterValue?harmonicsArray[i]:new Complex(0, 0);
+        
+        return filter;
+	}
+	
+	/**
+	 * Преобразовать комплексные функции в массив dobule[]
+	 * @param harmonicsArray Массив комплексных чисел
+	 * @return восстановленный массив
+	 */
+	public double[] getRestoredArray(Complex[] harmonicsArray) {		                	
+        Complex[] z = FFT.ifft(harmonicsArray);
+        
+        double[] result = new double[z.length];
+        
+        for (int i=0;i<result.length;i++)
+        	result[i] = z[i].abs();
+        	
+        return result;
+	}
+	
+	/**
+	 * Конвертировать массив комплексных значений в массив типа double[]
+	 * @param arr Массив комплексных чисел, которые будут конвертированы
+	 * @return конвертированный массив типа double[]
+	 */
+	public double[] convertToDoubleArray(Complex[] arr) {
+		double[] result = new double[arr.length];
+		
+		for(int i=0;i<arr.length;i++)
+			result[i] = arr[i].abs();
+		
+		return result;
+	}
+	
+	/**
+	 * Сформировать Excel файл. Необходим для проведения расчётов.
+	 * @return Пусть к созданному файлу. Если произошла ошибка - null.
+	 */
 	public String toExcelFile() {
 		try {
 			File templateFile = ResourceUtils.getFile("classpath:static/template.xlsx");
@@ -189,6 +319,11 @@ public class Statistic {
 		return null;
 	}
 	
+	/**
+	 * Округлить вещественное число до 3-х знаком после запятой
+	 * @param d Значение Double, которое необходимо округлить
+	 * @return Новое округлённое до 3-х знаков после запятой значение
+	 */
 	public Double getThreeDecimal(Double d) {
 		DecimalFormat df = new DecimalFormat("##.###");
 		return Double.valueOf(df.format(d).replace(',', '.'));

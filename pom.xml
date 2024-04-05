@@ -10,12 +10,17 @@
 	</parent>
 	<groupId>okis</groupId>
 	<artifactId>mmpi.lb1</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>mmpi.lb1</name>
-	<description>Demo project for Spring Boot</description>
+	
+	<description>Stack of laboratory work</description>
+	
 	<properties>
-		<java.version>17</java.version>
-	</properties>
+		<java.version>11</java.version>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+  	</properties>
+  	
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -47,10 +52,31 @@
 		    <artifactId>poi-ooxml</artifactId>
 		    <version>5.2.5</version>
 		</dependency>
+		<dependency>
+		    <groupId>de.sciss</groupId>
+		    <artifactId>jwave</artifactId>
+		    <version>1.0.3</version>
+		</dependency>
+		<dependency>
+	        <groupId>io.jenetics</groupId>
+	        <artifactId>jenetics</artifactId>
+	        <version>6.0.0</version>
+	    </dependency>
+	    <dependency>
+		    <groupId>org.encog</groupId>
+		    <artifactId>encog-core</artifactId>
+		    <version>3.4</version>
+		</dependency>
 	</dependencies>
-
+		
 	<build>
 		<plugins>
+			<plugin>
+		      <groupId>com.seovic.maven.plugins</groupId>
+		      <artifactId>npm-maven-plugin</artifactId>
+		      <version>1.0.4</version>
+		      <extensions>true</extensions>
+		    </plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

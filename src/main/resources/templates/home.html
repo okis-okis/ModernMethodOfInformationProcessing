@@ -4,11 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link th:href="@{/styles/style.css}" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
   </head>
   <body>
     <div class="wrapper">
       <h1>Лабораторная работа №1</h1>
+      <div class="autor-info">
+        <p>Автор: Кисельник Олег</p>
+        <p>Группа: СКС-23м</p>
+      </div>
       <div class="parametersInput">
         <form method="POST">
           <label for="min">Минимальное значение X</label>
@@ -47,8 +54,81 @@
             placeholder="2"
             th:value="${n}"
           />
+          <label for="filterFourier">Фильтр Фурье</label>
+          <input
+            type="number"
+            id="filterFourier"
+            step="1"
+            name="filterFourier"
+            placeholder="20"
+            th:value="${filterFourier}"
+          />
+          <h3>Первое треугольное значение</h3>
+          <br />
+          <label for="triangularStart">Начало треугольного числа</label>
+          <input
+            type="number"
+            id="triangularStart"
+            step="0.1"
+            name="triangularStart"
+            placeholder="0.2"
+            th:value="${triangularStart}"
+          />
 
-          <input type="submit" value="Обработать"/>
+          <label for="triangularCenter">Центр треугольного числа</label>
+          <input
+            type="number"
+            id="triangularCenter"
+            step="0.1"
+            name="triangularCenter"
+            placeholder="0.2"
+            th:value="${triangularCenter}"
+          />
+
+          <label for="triangularFinish">Конец треугольного числа</label>
+          <input
+            type="number"
+            id="triangularFinish"
+            step="0.1"
+            name="triangularFinish"
+            placeholder="0.2"
+            th:value="${triangularFinish}"
+          />
+
+          <h3>Второе треугольное значение</h3>
+          <br />
+
+          <label for="secondTriangularStart">Начало треугольного числа</label>
+          <input
+            type="number"
+            id="secondTriangularStart"
+            step="0.1"
+            name="secondTriangularStart"
+            placeholder="0.2"
+            th:value="${secondTriangularStart}"
+          />
+
+          <label for="secondTriangularCenter">Центр треугольного числа</label>
+          <input
+            type="number"
+            id="secondTriangularCenter"
+            step="0.1"
+            name="secondTriangularCenter"
+            placeholder="0.2"
+            th:value="${secondTriangularCenter}"
+          />
+
+          <label for="secondTriangularFinish">Конец треугольного числа</label>
+          <input
+            type="number"
+            id="secondTriangularFinish"
+            step="0.1"
+            name="secondTriangularFinish"
+            placeholder="0.2"
+            th:value="${secondTriangularFinish}"
+          />
+
+          <input type="submit" value="Обработать" />
         </form>
       </div>
 
@@ -70,10 +150,16 @@
         <p>Максимальное значение: <span th:text="${maxValue}"></span></p>
         <p>Сумма: <span th:text="${amount}"></span></p>
         <p>Тренд: <span th:text="${trend}"></span></p>
+        <p>
+          Значение среднеквадратичного отклонения:
+          <span th:text="${errorValue}"></span>
+        </p>
 
         <div class="tableData">
           <table class="generatedData">
-            <caption>Сгенерированные данные</caption>
+            <caption>
+              Сгенерированные данные
+            </caption>
             <thead>
               <tr>
                 <th>ID</th>
@@ -89,79 +175,160 @@
               </tr>
             </tbody>
           </table>
-        </div>        
-
-        <script th:src="@{/js/Chart.js}"></script>
+        </div>
 
         <h3 class="canvasTitle">График функции f(x) и тренда</h3>
-        <canvas id="lineChart" style="width:90%;"></canvas>
+        <canvas id="lineChart" style="width: 90%"></canvas>
 
-        <h3 class="canvasTitle">Точечное представление графика</h3>
-        <canvas id="pointChart" style="width:90%;"></canvas>
+        <h3 class="canvasTitle">Полиномиальная регрессия</h3>
+        <canvas id="pointChart" style="width: 90%"></canvas>
 
-        <script th:inline="javascript">
-          const xValues = /*[[${xArr}]]*/;
-          const yValues = /*[[${yArr}]]*/;
-          const trendValues = /*[[${trendArr}]]*/;
-          
-          new Chart("lineChart", {
-            type: "line",
-            data: {
-              labels: xValues,
-              datasets: [{
-                fill: false,
-                lineTension: 0,
-                backgroundColor: "rgba(0,0,255,1.0)",
-                borderColor: "rgba(0,0,255,0.1)",
-                data: yValues
-              },
-              {
-                fill: false,
-                lineTension: 0,
-                backgroundColor: "rgba(255,0,0,1.0)",
-                borderColor: "rgba(255,0,0,0.1)",
-                data: trendValues
-              }]
-            },
-            options: {
-              legend: {display: false},
-              scales: {
-                yAxes: [{ticks: {min: /*[[${minValue}]]*/, max:/*[[${maxValue}]]*/}}],
-              }
-            }
-          });
-
-          let xyValues = [];
-
-          for(let i=0;i<xValues.length;i++){
-            xyValues.push({x: xValues[i], y: yValues[i]});
-          }
-
-          console.log(xyValues);
-
-          new Chart("pointChart", {
-            type: "scatter",
-            data: {
-              datasets: [{
-                pointRadius: 4,
-                pointBackgroundColor: "rgb(0,0,255)",
-                data: xyValues
-              }]
-            },
-            options: {
-              legend: {display: false},
-              scales: {
-                xAxes: [{ticks: {min: /*[[${min}]]*/, max:/*[[${max}]]*/}}],
-                yAxes: [{ticks: {min: /*[[${minValue}]]*/, max:/*[[${maxValue}]]*/}}],
-              }
-            }
-          });
-        </script>
-                
         <div class="footerDownloadLink">
-          <a th:href="${excelFilePath}" class="btn" target="_blank"><i class="fa fa-download"></i>Скачать Excel file</a>
+          <a th:href="${excelFilePath}" class="btn" target="_blank"
+            ><i class="fa fa-download"></i>Скачать Excel файл</a
+          >
         </div>
-        
+
+        <hr />
+        <h1>Лабораторная работа №2</h1>
+
+        <h3 class="canvasTitle">Гармоники Фурье</h3>
+        <canvas id="harmonicsChart" style="width: 90%"></canvas>
+
+        <h3 class="canvasTitle">Применение фильтрации</h3>
+        <canvas id="harmonicsFilterChart" style="width: 90%"></canvas>
+
+        <h3 class="canvasTitle">Восстановление ряда Фурье</h3>
+        <canvas id="restoredChart" style="width: 90%"></canvas>
+
+        <h3 class="canvasTitle">График значений Вейвлета</h3>
+        <canvas id="waveletChart" style="width: 90%"></canvas>
+
+        <hr />
+
+        <h1>Лабораторная работа №3</h1>
+
+        <div class="tableData">
+          <table class="generatedData">
+            <caption>
+              Удалённый 10-й элемент (модифицированные данные)
+            </caption>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>x<sub>i</sub></th>
+                <th>f(x<sub>i</sub>)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="nodeM: ${nodesM}">
+                <td th:text="${nodeM.id}"></td>
+                <td th:text="${nodeM.x}"></td>
+                <td th:text="${nodeM.functionValue}"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Энтропия для первого треугольника: <span th:text="${entropy}"></span>
+        </p>
+        <p>
+          Энтропия для второго треугольника:
+          <span th:text="${secondEtropy}"></span>
+        </p>
+
+        <h3 class="canvasTitle">
+          Графическое изображение нечеткого треугольного числа
+        </h3>
+        <canvas id="triangularChart" style="width: 90%"></canvas>
+
+        <h3 class="canvasTitle">Сложение нечётких чисел</h3>
+        <canvas id="summTriangularChart" style="width: 90%"></canvas>
+
+        <h3 class="canvasTitle">Вычитание нечётких чисел</h3>
+        <canvas id="subTriangularChart" style="width: 90%"></canvas>
+
+        <h3 class="canvasTitle">Умножение нечётких чисел</h3>
+        <canvas id="mulTriangularChart" style="width: 90%"></canvas>
+
+        <h3 class="canvasTitle">Деление нечётких чисел</h3>
+        <canvas id="divTriangularChart" style="width: 90%"></canvas>
+
+        <h3 class="canvasTitle">Предсказание при помощи регрессии</h3>
+        <canvas id="predictChart" style="width: 90%"></canvas>
+
+        <p>
+          Slope (скос, наклон):
+          <span th:text="${linearSlope}"></span>
+        </p>
+
+        <p>
+          Отклонение:
+          <span th:text="${linearIntercept}"></span>
+        </p>
+
+        <h1>Лабораторная работа №4</h1>
+        <h3 class="canvasTitle">
+          Аппроксимация графика при помощи генетического алгоритма
+        </h3>
+        <canvas id="gaChart" style="width: 90%"></canvas>
+        <p>
+          Значение ошибки:
+          <span th:text="${approximationGAError}"></span>
+        </p>
+
+        <h1>Лабораторная работа №5</h1>
+        <h3 class="canvasTitle">
+          Предсказание следующих значений графика при помощи нейронной сети
+        </h3>
+        <canvas id="neuralNetworkChart" style="width: 90%"></canvas>
+
+        <script th:src="@{js/Chart.js}"></script>
+        <script th:src="@{js/charts.js}"></script>
+        <script th:inline="javascript">
+          const lineChart = document.getElementById("lineChart");
+          new Chart(lineChart, getLineChartWithTrend(/*[[${xArr}]]*/, /*[[${yArr}]]*/, /*[[${trendArr}]]*/, /*[[${minValue}]]*/, /*[[${maxValue}]]*/));
+
+          const pointChart = document.getElementById("pointChart");
+          new Chart(pointChart, getPointChart(/*[[${xArr}]]*/, /*[[${yArr}]]*/));
+
+          const harmonicsChart = document.getElementById("harmonicsChart");
+          new Chart(harmonicsChart, getHarmonicsChart(/*[[${harmonicsArray}]]*/));
+
+          const harmonicsFilterChart = document.getElementById("harmonicsFilterChart");
+          new Chart(harmonicsFilterChart, getHarmonicsChart(/*[[${harmonicsArrayFilter}]]*/));
+
+          const restoredChart = document.getElementById("restoredChart");
+          new Chart(restoredChart, getLineChart(/*[[${xArr}]]*/, /*[[${yArr}]]*/, /*[[${restoredData}]]*/, /*[[${arrWaveletReco}]]*/, /*[[${minValue}]]*/, /*[[${maxValue}]]*/));
+
+          const waveletChart = document.getElementById("waveletChart");
+          new Chart(waveletChart, getWaveletLineChart(/*[[${xArr}]]*/, /*[[${yArr}]]*/, /*[[${waveletReco}]]*/, /*[[${minValue}]]*/, /*[[${maxValue}]]*/));
+
+          const triangularChart = document.getElementById("triangularChart");
+          new Chart(triangularChart, getTriangularChart(/*[[${xArr}]]*/, /*[[${triangular}]]*/, /*[[${secondTriangular}]]*/, /*[[${minValue}]]*/, /*[[${maxValue}]]*/));
+
+          const summTriangularChart = document.getElementById("summTriangularChart");
+          new Chart(summTriangularChart, getTriangularOperationChart(/*[[${xArr}]]*/, /*[[${summTriangular}]]*/, /*[[${minValue}]]*/, /*[[${maxValue}]]*/));
+
+          const subTriangularChart = document.getElementById("subTriangularChart");
+          new Chart(subTriangularChart, getTriangularOperationChart(/*[[${xArr}]]*/, /*[[${subTriangular}]]*/, /*[[${minValue}]]*/, /*[[${maxValue}]]*/));
+
+          const mulTriangularChart = document.getElementById("mulTriangularChart");
+          new Chart(mulTriangularChart, getTriangularOperationChart(/*[[${xArr}]]*/, /*[[${mulTriangular}]]*/, /*[[${minValue}]]*/, /*[[${maxValue}]]*/));
+
+          const divTriangularChart = document.getElementById("divTriangularChart");
+          new Chart(divTriangularChart, getTriangularOperationChart(/*[[${xArr}]]*/, /*[[${divTriangular}]]*/, /*[[${minValue}]]*/, /*[[${maxValue}]]*/));
+
+          const predictChart = document.getElementById("predictChart");
+          new Chart(predictChart, getPredictChart(/*[[${xM}]]*/, /*[[${yArr}]]*/, /*[[${yM}]]*/, /*[[${minValue}]]*/, /*[[${maxValue}]]*/));
+
+          const gaChart = document.getElementById("gaChart");
+          new Chart(gaChart, getPredictChart(/*[[${xArr}]]*/, /*[[${yArr}]]*/, /*[[${approximationGAResult}]]*/, /*[[${minValue}]]*/, /*[[${maxValue}]]*/));
+
+          const neuralNetworkChart = document.getElementById("neuralNetworkChart");
+          new Chart(neuralNetworkChart, getPredictChart(/*[[${xArr}]]*/, /*[[${yArr}]]*/, /*[[${neuralNetworkResult}]]*/, /*[[${minValue}]]*/, /*[[${maxValue}]]*/));
+        </script>
       </div>
     </div>
   </body>

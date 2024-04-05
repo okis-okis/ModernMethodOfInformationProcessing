@@ -31,9 +31,8 @@ public class FilesController {
 	    @PathVariable("file_name") String fileName, 
 	    HttpServletResponse response) {
 	    try {
-	      // get your file as InputStream
+	      // работа с файлом в виде InputStream
 	      InputStream is = new FileInputStream(new File("result.xlsx"));
-	      // copy it to response's OutputStream
 	      org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
 	      response.flushBuffer();
 	    } catch (IOException ex) {
