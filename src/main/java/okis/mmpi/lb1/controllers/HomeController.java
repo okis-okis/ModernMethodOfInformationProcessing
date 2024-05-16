@@ -1,5 +1,10 @@
 package okis.mmpi.lb1.controllers;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -32,12 +37,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import io.jenetics.DoubleChromosome;
 import io.jenetics.DoubleGene;
 import io.jenetics.Genotype;
-import io.jenetics.engine.Engine;
-import io.jenetics.engine.EvolutionResult;
-import io.jenetics.util.Factory;
 import jwave.Transform;
 import jwave.transforms.DiscreteFourierTransform;
 import jwave.transforms.FastWaveletTransform;
@@ -51,7 +52,7 @@ import okis.mmpi.lb1.Statistic;
 @RequestMapping("/")
 public class HomeController {
 	
-	Double[] gaApproximationY;
+	ArrayList<Double[]> fracturePoint;
 	
 	Statistic stat;
 	
@@ -121,7 +122,7 @@ public class HomeController {
 		
 		setTriangularData(mv);
 		
-		setGeneticAlgorithmData(mv);
+//		setGeneticAlgorithmData(mv);
 		
 		setNeuralNetworkData(mv);
 		
@@ -323,7 +324,7 @@ public class HomeController {
     	int result = 0;
 
     	for(int i=0;i<gt.chromosome().length();i++)
-    		result += 500-(int)(Math.abs(gaApproximationY[i]-gt.chromosome().get(i).doubleValue())*100);
+    		result += 500-(int)(Math.abs(fracturePoint.get(i)[1]-gt.chromosome().get(i).doubleValue())*100);
     	
         return result;
     }
@@ -333,50 +334,84 @@ public class HomeController {
 	 * @param mv
 	 */
 	private ModelAndView setGeneticAlgorithmData(ModelAndView mv) {
-		int arrayApproximationLength = 22;
-		
-		gaApproximationY = new Double[arrayApproximationLength];
+		fracturePoint = new ArrayList<Double[]>();
 		
 		double[] yVar = (double[])mv.getModel().get("yArr");
 		
-		for(int i=0;i<arrayApproximationLength;i++) {
-			gaApproximationY[i] = yVar[i*3];
-		}
+		for(int i=1;i<yVar.length-1;i++)
+			if(yVar[i]>yVar[i-1]&&yVar[i]>yVar[i+1]) {
+				fracturePoint.add(new Double[] {(i*0.2), yVar[i]});
+			}else if(yVar[i]<yVar[i-1]&&yVar[i]<yVar[i+1]) {
+				fracturePoint.add(new Double[] {(i*0.2), yVar[i]});
+			}
 		
-		// 1.) Определить генотип
-        Factory<Genotype<DoubleGene>> gtf =
-            Genotype.of(DoubleChromosome.of(-10.0, 10.0, gaApproximationY.length));
+		String filename = "ga300k.ser";
+		
+//		 1.) Определить генотип
+//        Factory<Genotype<DoubleGene>> gtf =
+//            Genotype.of(DoubleChromosome.of(-10.0, 10.0, fracturePoint.size()));
  
-        // 3.) Создать двигатель для обработки данных
-        Engine<DoubleGene, Integer> engine = Engine
-            .builder(this::eval, gtf)
-            .build();
+//         3.) Создать двигатель для обработки данных
+//        Engine<DoubleGene, Integer> engine = Engine
+//            .builder(this::eval, gtf)
+//            .build();
  
         // 4.) Запуск популяция
-        Genotype<DoubleGene> result = engine.stream()
-            .limit(4000)
-            .collect(EvolutionResult.toBestGenotype());
+//        Genotype<DoubleGene> result = engine.stream()
+//            .limit(300000)
+//            .collect(EvolutionResult.toBestGenotype());
         
-        List<Double> approximationGAResult = new ArrayList<Double>();
+        // Serialization 
+//        try
+//        {   
+//            //Saving of object in a file
+//            FileOutputStream file = new FileOutputStream(filename);
+//            ObjectOutputStream out = new ObjectOutputStream(file);
+//             
+//            // Method for serialization of object
+//            out.writeObject(result);
+//             
+//            out.close();
+//            file.close();
+//             
+//            System.out.println("Object has been serialized");
+// 
+//        }
+//        catch(IOException ex)
+//        {
+//            System.out.println("IOException is caught");
+//        }
         
-        for(int repeat = 0; repeat<4;repeat++) {
-	        for(int i=0;i<result.chromosome().length()-1;i++) {
-	        	for(int offset=0;offset<3;offset++)
-	        		approximationGAResult.add(result.chromosome().get(i).doubleValue()+((result.chromosome().get(1+i).doubleValue()-result.chromosome().get(i).doubleValue())/5*offset));
+        Genotype<DoubleGene> deserializeGenotype = (Genotype<DoubleGene>) objectDeserialize(filename);
+        
+        if(deserializeGenotype != null) {
+	        double approximationError = 0.0;
+	        for(int i=0;i<fracturePoint.size();i++) {
+	        	approximationError += Math.abs(fracturePoint.get(i)[1]-deserializeGenotype.chromosome().get(i).doubleValue());
+//	        	System.out.println(fracturePoint.get(i)[1]+"   "+deserializeGenotype.chromosome().get(i).doubleValue());
 	        }
+	        
+	        approximationError/=fracturePoint.size();
+	        
+	        System.out.println("Error: "+approximationError);
+	        
+	        for(int i=0;i<deserializeGenotype.chromosome().length()-1;i++) {
+        		fracturePoint.get(i)[1] = deserializeGenotype.chromosome().get(i).doubleValue();
         }
-        
-        double approximationError = 0.0;
-        for(int i=0;i<gaApproximationY.length;i++)
-        	approximationError += (gaApproximationY[i]-result.chromosome().get(i).doubleValue())/gaApproximationY[i];
-        approximationError/=gaApproximationY.length;
-        
-        mv.addObject("approximationGAResult", approximationGAResult);
-        mv.addObject("approximationGAError", approximationError);
+	        
+	        mv.addObject("fracturePoints", fracturePoint);
+	        mv.addObject("approximationGAError", approximationError);
+        }
         
         return mv;
 	}
 	
+	/**
+	 * Функция формирования, обучения и использованния нейронной сети 
+	 * для аппроксимация данных графика
+	 * @param mv Класс Model и View для MVC используется для занесения данных 
+	 * (для отображения на странице)
+	 */
 	private void setNeuralNetworkData(ModelAndView mv) {	
 		double[] yArr = (double[]) mv.getModel().get("yArr");
 		double[][] inputData = new double[yArr.length][1];
@@ -419,12 +454,17 @@ public class HomeController {
 		} while(epoch<500);
 		
 		train.finishTraining();
+//		
+//		objectSerialize(network, "nn.ser");
+		
+//		BasicNetwork network = (BasicNetwork)objectDeserialize("nn.ser");
 		
 		double[] neuralNetworkResult = new double[yArr.length];
 		
-		for(int i=0;i<testingSet.size();i++) {
+		for(int i=0;i<testingSet.size() && network!=null;i++) {
 			final MLData output = network.compute(testingSet.get(i).getInput());
 			neuralNetworkResult[i] = 10-output.getData(0)*1.6-0.4;
+//			neuralNetworkResult[i] = output.getData(0);
 		}
 		
 		mv.addObject("neuralNetworkResult", neuralNetworkResult);
@@ -462,5 +502,62 @@ public class HomeController {
 		}
 		
 		return -2*entropy/labels.length;
+	}
+	
+	private void objectSerialize(Object o, String path) {
+		// Serialization 
+        try
+        {   
+            //Saving of object in a file
+            FileOutputStream file = new FileOutputStream(path);
+            ObjectOutputStream out = new ObjectOutputStream(file);
+             
+            // Method for serialization of object
+            out.writeObject(o);
+             
+            out.close();
+            file.close();
+             
+            System.out.println("Object has been serialized");
+ 
+        }
+         
+        catch(IOException ex)
+        {
+            System.out.println("IOException is caught");
+        }
+	}
+	
+	private Object objectDeserialize(String path) {
+		Object result = null;
+		
+		// Deserialization
+        try
+        {   
+            // Reading the object from a file
+            FileInputStream file = new FileInputStream(path);
+            ObjectInputStream in = new ObjectInputStream(file);
+             
+            // Method for deserialization of object
+            result = in.readObject();
+             
+            in.close();
+            file.close();
+             
+            System.out.println("Object has been deserialized ");
+            return result;
+        }
+         
+        catch(IOException ex)
+        {
+            System.out.println("IOException is caught");
+        }
+         
+        catch(ClassNotFoundException ex)
+        {
+            System.out.println("ClassNotFoundException is caught");
+        }
+        
+        return null;
 	}
 }
