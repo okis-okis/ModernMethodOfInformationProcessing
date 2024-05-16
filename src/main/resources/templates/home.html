@@ -13,7 +13,7 @@
     <div class="wrapper">
       <h1>Лабораторная работа №1</h1>
       <div class="autor-info">
-        <p>Автор: Кисельник Олег</p>
+        <p>Автор: okis</p>
         <p>Группа: СКС-23м</p>
       </div>
       <div class="parametersInput">
@@ -274,7 +274,7 @@
         </h3>
         <canvas id="gaChart" style="width: 90%"></canvas>
         <p>
-          Значение ошибки:
+          Ошибка:
           <span th:text="${approximationGAError}"></span>
         </p>
 
@@ -284,8 +284,10 @@
         </h3>
         <canvas id="neuralNetworkChart" style="width: 90%"></canvas>
 
+        <canvas id="neuralNetworkChartLite" style="width: 90%"></canvas>
+
         <script th:src="@{js/Chart.js}"></script>
-        <script th:src="@{js/charts.js}"></script>
+        <script th:src="@{js/chartSetting.js}"></script>
         <script th:inline="javascript">
           const lineChart = document.getElementById("lineChart");
           new Chart(lineChart, getLineChartWithTrend(/*[[${xArr}]]*/, /*[[${yArr}]]*/, /*[[${trendArr}]]*/, /*[[${minValue}]]*/, /*[[${maxValue}]]*/));
@@ -323,11 +325,69 @@
           const predictChart = document.getElementById("predictChart");
           new Chart(predictChart, getPredictChart(/*[[${xM}]]*/, /*[[${yArr}]]*/, /*[[${yM}]]*/, /*[[${minValue}]]*/, /*[[${maxValue}]]*/));
 
-          const gaChart = document.getElementById("gaChart");
-          new Chart(gaChart, getPredictChart(/*[[${xArr}]]*/, /*[[${yArr}]]*/, /*[[${approximationGAResult}]]*/, /*[[${minValue}]]*/, /*[[${maxValue}]]*/));
+          geneticFracturePoint = [];
+
+          points = /*[[${fracturePoints}]]*/;
+          xArr = /*[[${xArr}]]*/;
+          yArr = /*[[${yArr}]]*/;
+
+          // for(let i=0; i<points.length; i++)
+          //   geneticFracturePoint.push(
+          //     {
+          //       x: points[i][0],
+          //       y: points[i][1]
+          //     }
+          //   );
+
+          // source = []
+
+          // for(let i=0; i<xArr.length; i++)
+          //   source.push(
+          //     {
+          //       x: xArr[i],
+          //       y: yArr[i]
+          //     }
+          //   );
+
+          // const gaChart = document.getElementById("gaChart");
+          // new Chart(gaChart,
+          //   {
+          //     type: 'line',
+          //     data: {
+          //       datasets: [{
+          //         label: 'Данные перелома аппроксимированные ГА',
+          //         data: geneticFracturePoint,
+          //         backgroundColor: 'rgb(0, 255, 0)'
+          //       },
+          //       {
+          //         label: 'Исходный график',
+          //         data: source,
+          //         backgroundColor: 'rgb(255, 0, 0)'
+          //       }
+          //       ],
+          //     },
+          //     options: {
+          //       scales: {
+          //         x: {
+          //           type: 'linear',
+          //           position: 'bottom'
+          //         }
+          //       }
+          //     }
+          //   }
+          // );
 
           const neuralNetworkChart = document.getElementById("neuralNetworkChart");
           new Chart(neuralNetworkChart, getPredictChart(/*[[${xArr}]]*/, /*[[${yArr}]]*/, /*[[${neuralNetworkResult}]]*/, /*[[${minValue}]]*/, /*[[${maxValue}]]*/));
+
+          nnLiteVal = /*[[${neuralNetworkResult}]]*/
+          nnLiteVal2 = []
+
+          for(let i=0; i<60; i++){
+            nnLiteVal2.push(nnLiteVal[i]);
+          }
+
+          new Chart(document.getElementById("neuralNetworkChartLite"), getPredictChart(/*[[${xArr}]]*/, /*[[${yArr}]]*/, nnLiteVal2, /*[[${minValue}]]*/, /*[[${maxValue}]]*/));
         </script>
       </div>
     </div>
